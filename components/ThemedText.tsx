@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   lgBold: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: 700,
     lineHeight: 24,
   },
   xl: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   xlBold: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: 700,
     lineHeight: 24,
   },
   xxl: {

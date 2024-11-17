@@ -1,11 +1,22 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import React, { useState, useContext } from 'react'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { LinearGradient } from 'expo-linear-gradient'
 import Header from '@/components/Header'
 import { fonts } from '@/constants/Fonts'
-import { CartContext } from '@/context/CartContext' // Correct import
+import { CartContext } from '@/context/CartContext'
 import { Image } from 'expo-image'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { StatusBar } from 'expo-status-bar'
+import useThemeColor from '@/hooks/useThemeColor'
+import { ThemedText } from '@/components/ThemedText'
+
+const { width, height } = Dimensions.get('window')
 
 const colorsArray = [
   '#91A1B0',
@@ -17,6 +28,12 @@ const colorsArray = [
 ]
 
 export default function ProductDetailsScreen() {
+  const background = useThemeColor('background')
+  const pink = useThemeColor('pink')
+  const red = useThemeColor('red')
+  const one = useThemeColor('pinkGradientOne')
+  const two = useThemeColor('pinkGradientTwo')
+
   // Safely accessing the CartContext
   const cartContext = useContext(CartContext)
   if (!cartContext) {
@@ -40,7 +57,7 @@ export default function ProductDetailsScreen() {
   // Add to cart handler
   const handleAddToCart = () => {
     const product = {
-      id: productId, // Now it's a string
+      id: productId,
       title: productTitle,
       price: parseFloat(productPrice), // Ensure price is a number
       image: productImage,
@@ -53,74 +70,108 @@ export default function ProductDetailsScreen() {
   }
 
   return (
-    <LinearGradient colors={['#FDF0F3', '#FFFBFC']} style={styles.container}>
-      <View style={styles.header}>
-        <Header isCart={false} />
-      </View>
-      <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: productImage }}
-          contentFit='cover'
-          style={styles.coverImage}
-        />
-      </View>
-      <View style={styles.contentContainer}>
-        <View style={styles.textContainer}>
-          <Text style={styles.fontText}>{productTitle}</Text>
-          <Text style={styles.fontText}>${productPrice}</Text>
+    <SafeAreaView style={styles.container}>
+      <StatusBar style='auto' />
+      <LinearGradient colors={[one, two]} style={{ flex: 1 }}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Header isCart={false} />
         </View>
-        <Text style={[styles.fontText, styles.sizeText]}>Size</Text>
-        {/* Size Container */}
-        <View style={styles.sizeContainer}>
-          {['S', 'M', 'L', 'XL'].map((size) => (
-            <TouchableOpacity
-              key={size}
-              style={styles.sizeValueContainer}
-              onPress={() => setSelectedSize(size)}
+        {/* Product image */}
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: productImage }}
+            contentFit='fill'
+            style={styles.coverImage}
+          />
+        </View>
+        {/* Product description */}
+        <View style={styles.contentContainer}>
+          {/* Product name and price */}
+          <View style={styles.textContainer}>
+            <ThemedText
+              type='xlBold'
+              c='blackSecondary'
+              style={{ fontFamily: fonts.regular }}
             >
-              <Text
+              {productTitle}
+            </ThemedText>
+            <ThemedText
+              type='xlBold'
+              c='blackSecondary'
+              style={{ fontFamily: fonts.regular }}
+            >
+              $ {productPrice}
+            </ThemedText>
+          </View>
+
+          {/* Size Container */}
+          <View style={styles.sizeContainer}>
+            <ThemedText
+              type='xlBold'
+              c='blackSecondary'
+              style={{ fontFamily: fonts.regular, marginRight: 20 }}
+            >
+              Size
+            </ThemedText>
+            {['S', 'M', 'L', 'XL'].map((size) => (
+              <TouchableOpacity
+                key={size}
                 style={[
-                  styles.sizeValueText,
-                  selectedSize === size && styles.selectedText,
+                  styles.sizeValueContainer,
+                  { backgroundColor: background },
                 ]}
+                onPress={() => setSelectedSize(size)}
               >
-                {size}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {/* Color Container */}
-        <View style={styles.colorContainer}>
-          {colorsArray.map((color, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => setSelectedColor(color)}
-            >
-              <View
-                style={[
-                  styles.borderColorCircle,
-                  selectedColor === color && {
-                    borderColor: color,
-                    borderWidth: 2,
-                    borderRadius: 24,
-                  },
-                ]}
+                <ThemedText
+                  type='lgBold'
+                  style={[
+                    { fontFamily: fonts.regular },
+                    selectedSize === size && { color: red },
+                  ]}
+                >
+                  {size}
+                </ThemedText>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {/* Color Container */}
+          <View style={styles.colorContainer}>
+            {colorsArray.map((color, index) => (
+              <TouchableOpacity
+                key={color}
+                onPress={() => setSelectedColor(color)}
               >
                 <View
-                  style={[styles.colorCircle, { backgroundColor: color }]}
-                ></View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {/* Add to Cart Button */}
-        <View>
-          <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
-            <Text style={styles.buttonText}>Add to Cart</Text>
+                  style={[
+                    styles.borderColorCircle,
+                    selectedColor === color && {
+                      borderColor: color,
+                      borderWidth: 2,
+                      borderRadius: 24,
+                    },
+                  ]}
+                >
+                  <View
+                    style={[styles.colorCircle, { backgroundColor: color }]}
+                  />
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Add to Cart Button */}
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: pink }]}
+            onPress={handleAddToCart}
+          >
+            <ThemedText type='xxlBold' c='white'>
+              Add to Cart
+            </ThemedText>
           </TouchableOpacity>
         </View>
-      </View>
-    </LinearGradient>
+      </LinearGradient>
+    </SafeAreaView>
   )
 }
 
@@ -132,74 +183,51 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   imageContainer: {
-    height: 420,
     width: '100%',
+    height: height * 0.5,
   },
   coverImage: {
     flex: 1,
   },
   contentContainer: {
-    padding: 20,
+    padding: 15,
   },
   textContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  fontText: {
-    fontSize: 20,
-    fontFamily: fonts.regular,
-    fontWeight: '700',
-    color: '#444444',
-  },
-  sizeText: {
-    marginTop: 20,
-  },
   sizeContainer: {
     flexDirection: 'row',
-    marginTop: 5,
-    marginBottom: 5,
+    alignItems: 'center',
+    marginVertical: 15,
+    gap: 10,
   },
   sizeValueContainer: {
-    backgroundColor: '#FFFFFF',
-    height: 40,
     width: 40,
+    aspectRatio: 1,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  sizeValueText: {
-    fontSize: 18,
-    fontFamily: fonts.regular,
-    fontWeight: '700',
-  },
-  selectedText: {
-    color: '#E55B5B',
   },
   colorContainer: {
     flexDirection: 'row',
+    alignSelf: 'center',
+    gap: 10,
   },
   borderColorCircle: {
-    height: 48,
     width: 48,
+    aspectRatio: 1,
     padding: 5,
-    marginHorizontal: 5,
   },
   colorCircle: {
     flex: 1,
     borderRadius: 18,
   },
   button: {
-    backgroundColor: '#E96E6E',
-    height: 62,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
-    marginTop: 20,
-  },
-  buttonText: {
-    fontSize: 24,
-    color: '#FFFFFF',
-    fontWeight: '700',
+    borderRadius: 10,
+    marginVertical: 30,
   },
 })

@@ -1,12 +1,29 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import useThemeColor from '@/hooks/useThemeColor'
+import { ThemedText } from '@/components/ThemedText'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import { StatusBar } from 'expo-status-bar'
 
 export default function ReorderScreen() {
+  const theme = useSelector((state: RootState) => state.theme.theme)
+
+  const backgroundColor = useThemeColor('backgroundScreen')
+
   return (
-    <View>
-      <Text>Coming soon</Text>
-    </View>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+
+      <ThemedText>Coming soon</ThemedText>
+      
+    </SafeAreaView>
   )
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+})

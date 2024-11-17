@@ -1,27 +1,38 @@
 import {
   FlatList,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native'
 import React, { useContext } from 'react'
-import { LinearGradient } from 'expo-linear-gradient'
 import Header from '@/components/Header'
 import { fonts } from '@/constants/Fonts'
 import CartCard from '@/components/CartCard'
 import { CartContext } from '@/context/CartContext'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import useThemeColor from '@/hooks/useThemeColor'
+import { StatusBar } from 'expo-status-bar'
+import { RootState } from '@/redux/store'
+import { useSelector } from 'react-redux'
+import { ThemedText } from '@/components/ThemedText'
 
 export default function CartScreen() {
+  const theme = useSelector((state: RootState) => state.theme.theme)
+
+  const backgroundColor = useThemeColor('backgroundScreen')
+  const pink = useThemeColor('pink')
+
   const { cartItems, deleteCartItem, totalPrice } = useContext(CartContext)
 
   const handleDeleteItem = async (id) => {
     await deleteCartItem(id)
   }
   return (
-    <LinearGradient colors={['#FDF0F3', '#FFFBFC']} style={styles.container}>
+    <SafeAreaView style={[styles.container, { flex: 1, backgroundColor }]}>
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
+      {/* Header */}
       <View style={styles.header}>
-        <Header isCart={true} />
+        <Header isCart={true} title='My cart' />
       </View>
       <FlatList
         data={cartItems}
@@ -29,41 +40,67 @@ export default function CartScreen() {
           <CartCard item={item} handleDelete={handleDeleteItem} />
         )}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ marginTop: 40, paddingBottom: 200 }}
+        contentContainerStyle={styles.wrapper}
         ListFooterComponent={
           <>
             <View style={styles.bottomContentContainer}>
               <View style={styles.flexRowContainer}>
-                <Text style={styles.titleText}>Total:</Text>
-                <Text style={styles.priceText}>${totalPrice}</Text>
-              </View>
-              <View style={styles.flexRowContainer}>
-                <Text style={styles.titleText}>Shpping:</Text>
-                <Text style={styles.priceText}>$0.0</Text>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.flexRowContainer}>
-                <Text style={styles.titleText}>Grand Total:</Text>
-                <Text style={[styles.priceText, styles.grandPriceText]}>
+                <ThemedText type='lg' c='greyTertiary'>
+                  Total:
+                </ThemedText>
+                <ThemedText type='lg' c='greyTertiary'>
                   ${totalPrice}
-                </Text>
+                </ThemedText>
+              </View>
+              <View style={styles.flexRowContainer}>
+                <ThemedText type='lg' c='greyTertiary'>
+                  Shipping:
+                </ThemedText>
+                <ThemedText type='lg' c='greyTertiary'>
+                  $0.0
+                </ThemedText>
+              </View>
+              <View style={[styles.divider, { borderColor: '#C0C0C0' }]} />
+              <View style={styles.flexRowContainer}>
+                <ThemedText type='lg' c='greyTertiary'>
+                  Grand Total:
+                </ThemedText>
+                <ThemedText type='lgBold' c='blackTertiary'>
+                  ${totalPrice}
+                </ThemedText>
               </View>
             </View>
-            <TouchableOpacity style={styles.button}>
-              <Text style={styles.buttonText}>Checkout</Text>
+
+            {/* Checkout button */}
+            <TouchableOpacity style={[styles.button, {backgroundColor: pink}]}>
+              <ThemedText
+                type='xlBold'
+                c='white'
+                ta='center'
+                style={{ fontFamily: fonts.regular }}
+              >
+                Checkout
+              </ThemedText>
             </TouchableOpacity>
           </>
         }
       />
-    </LinearGradient>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 15,
+    paddingHorizontal: 15,
   },
-  header: {},
+  header: {
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+  },
+  wrapper: {
+    paddingVertical: 10,
+    paddingBottom: 50,
+  },
   flexRowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -71,40 +108,17 @@ const styles = StyleSheet.create({
   },
   bottomContentContainer: {
     marginHorizontal: 10,
-    marginTop: 30,
-  },
-  titleText: {
-    fontSize: 18,
-    color: '#757575',
-    fontWeight: '500',
-  },
-  priceText: {
-    fontSize: 18,
-    color: '#757575',
-    fontWeight: '600',
   },
   divider: {
     borderWidth: 1,
-    borderColor: '#C0C0C0',
     marginTop: 10,
     marginBottom: 5,
   },
-  grandPriceText: {
-    color: '#3C3C3C',
-    fontWeight: '700',
-  },
   button: {
-    backgroundColor: '#E96E6E',
-    height: 60,
+    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
-    marginTop: 30,
-  },
-  buttonText: {
-    fontSize: 24,
-    color: '#FFFFFF',
-    fontWeight: '700',
-    fontFamily: fonts.regular,
+    borderRadius: 10,
+    marginVertical: 30,
   },
 })
