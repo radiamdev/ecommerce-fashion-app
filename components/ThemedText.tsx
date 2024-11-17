@@ -1,116 +1,116 @@
-import React from "react";
-import { Text, type TextProps, StyleSheet, PixelRatio } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import useThemeColor from "@/hooks/useThemeColor"; // Import the useThemeColor hook
-import { ThemeColors } from "@/constants/Colors";
+import React from 'react'
+import { Text, type TextProps, StyleSheet, PixelRatio } from 'react-native'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import useThemeColor from '@/hooks/useThemeColor' // Import the useThemeColor hook
+import { ThemeColors } from '@/constants/Colors'
 
 export type ThemedTextProps = TextProps & {
   type?:
-    | "xs"
-    | "sm"
-    | "smBold"
-    | "default"
-    | "defaultSemiBold"
-    | "md"
-    | "mdBold"
-    | "lg"
-    | "lgBold"
-    | "xl"
-    | "xlBold"
-    | "xxl"
-    | "xxlBold"
-    | "xxxl"
-    | "xxxlBold"
-    | "title"
-    | "link"
-    | "big";
-  c?: keyof ThemeColors;
-  ta?: "auto" | "center" | "left" | "justify" | "right";
-  tt?: "none" | "capitalize" | "uppercase" | "lowercase";
-};
+    | 'xs'
+    | 'sm'
+    | 'smBold'
+    | 'default'
+    | 'defaultSemiBold'
+    | 'md'
+    | 'mdBold'
+    | 'lg'
+    | 'lgBold'
+    | 'xl'
+    | 'xlBold'
+    | 'xxl'
+    | 'xxlBold'
+    | 'xxxl'
+    | 'xxxlBold'
+    | 'title'
+    | 'link'
+    | 'big'
+  c?: keyof ThemeColors
+  ta?: 'auto' | 'center' | 'left' | 'justify' | 'right'
+  tt?: 'none' | 'capitalize' | 'uppercase' | 'lowercase'
+}
 
-const pixelDensity = PixelRatio.get();
+const pixelDensity = PixelRatio.get()
 
 export function ThemedText({
   style,
-  type = "default",
+  type = 'default',
   c,
-  ta = "auto",
-  tt = "none",
+  ta = 'auto',
+  tt = 'none',
   ...rest
 }: ThemedTextProps) {
-  const theme = useSelector((state: RootState) => state.theme.theme);
-  const colors = useSelector((state: RootState) => state.theme.colors);
-  const defaultColor = colors[theme].text;
-  const themeColor = useThemeColor(c ?? "text");
-  const color = c ? themeColor : defaultColor;
+  const theme = useSelector((state: RootState) => state.theme.theme)
+  const colors = useSelector((state: RootState) => state.theme.colors)
+  const defaultColor = colors[theme].text
+  const themeColor = useThemeColor(c ?? 'text')
+  const color = c ? themeColor : defaultColor
 
   return (
     <Text
       style={[
         { color },
-        type === "xs" ? styles.xs : undefined,
-        type === "sm" ? styles.sm : undefined,
-        type === "smBold" ? styles.smBold : undefined,
-        type === "default" ? styles.default : undefined,
-        type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
-        type === "md" ? styles.md : undefined,
-        type === "mdBold" ? styles.mdBold : undefined,
-        type === "lg" ? styles.lg : undefined,
-        type === "lgBold" ? styles.lgBold : undefined,
-        type === "xl" ? styles.xl : undefined,
-        type === "xlBold" ? styles.xlBold : undefined,
-        type === "xxl" ? styles.xxl : undefined,
-        type === "xxlBold" ? styles.xxlBold : undefined,
-        type === "xxxl" ? styles.xxl : undefined,
-        type === "xxxlBold" ? styles.xxlBold : undefined,
-        type === "title" ? styles.title : undefined,
-        type === "link" ? styles.link : undefined,
-        type === "big" ? styles.big : undefined,
-        ta === "center" ? styles.center : undefined,
-        ta === "auto" ? styles.auto : undefined,
-        ta === "left" ? styles.left : undefined,
-        ta === "justify" ? styles.justify : undefined,
-        ta === "right" ? styles.right : undefined,
-        tt === "none" ? styles.none : undefined,
-        tt === "capitalize" ? styles.capitalize : undefined,
-        tt === "uppercase" ? styles.uppercase : undefined,
-        tt === "lowercase" ? styles.lowercase : undefined,
+        type === 'xs' ? styles.xs : undefined,
+        type === 'sm' ? styles.sm : undefined,
+        type === 'smBold' ? styles.smBold : undefined,
+        type === 'default' ? styles.default : undefined,
+        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
+        type === 'md' ? styles.md : undefined,
+        type === 'mdBold' ? styles.mdBold : undefined,
+        type === 'lg' ? styles.lg : undefined,
+        type === 'lgBold' ? styles.lgBold : undefined,
+        type === 'xl' ? styles.xl : undefined,
+        type === 'xlBold' ? styles.xlBold : undefined,
+        type === 'xxl' ? styles.xxl : undefined,
+        type === 'xxlBold' ? styles.xxlBold : undefined,
+        type === 'xxxl' ? styles.xxl : undefined,
+        type === 'xxxlBold' ? styles.xxlBold : undefined,
+        type === 'title' ? styles.title : undefined,
+        type === 'link' ? styles.link : undefined,
+        type === 'big' ? styles.big : undefined,
+        ta === 'center' ? styles.center : undefined,
+        ta === 'auto' ? styles.auto : undefined,
+        ta === 'left' ? styles.left : undefined,
+        ta === 'justify' ? styles.justify : undefined,
+        ta === 'right' ? styles.right : undefined,
+        tt === 'none' ? styles.none : undefined,
+        tt === 'capitalize' ? styles.capitalize : undefined,
+        tt === 'uppercase' ? styles.uppercase : undefined,
+        tt === 'lowercase' ? styles.lowercase : undefined,
         style,
       ]}
       {...rest}
     />
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   center: {
-    textAlign: "center",
+    textAlign: 'center',
   },
   auto: {
-    textAlign: "auto",
+    textAlign: 'auto',
   },
   left: {
-    textAlign: "left",
+    textAlign: 'left',
   },
   justify: {
-    textAlign: "justify",
+    textAlign: 'justify',
   },
   right: {
-    textAlign: "right",
+    textAlign: 'right',
   },
   none: {
-    textTransform: "none",
+    textTransform: 'none',
   },
   capitalize: {
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
   },
   uppercase: {
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   lowercase: {
-    textTransform: "lowercase",
+    textTransform: 'lowercase',
   },
   xs: {
     fontSize: 10,
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   smBold: {
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 16,
   },
   default: {
@@ -132,15 +132,15 @@ const styles = StyleSheet.create({
   defaultSemiBold: {
     fontSize: 14,
     lineHeight: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   md: {
     fontSize: 16,
-    fontWeight: "thin",
+    fontWeight: 'thin',
   },
   mdBold: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   lg: {
     fontSize: 18,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   },
   lgBold: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 24,
   },
   xl: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   xlBold: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 24,
   },
   xxl: {
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   xxlBold: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 24,
   },
   xxxl: {
@@ -175,22 +175,22 @@ const styles = StyleSheet.create({
   },
   xxxlBold: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 24,
   },
   title: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     lineHeight: 32,
   },
   big: {
     fontSize: 70,
     lineHeight: 70,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: "#0a7ea4",
+    color: '#0a7ea4',
   },
-});
+})
