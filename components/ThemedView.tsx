@@ -1,14 +1,12 @@
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
+import React from 'react'
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+export function ThemedView({ style, ...otherProps }: Readonly<ViewProps>) {
+  const theme = useSelector((state: RootState) => state.theme.theme)
+  const colors = useSelector((state: RootState) => state.theme.colors)
+  const backgroundColor = colors[theme].background
 
-export type ThemedViewProps = ViewProps & {
-  lightColor?: string;
-  darkColor?: string;
-};
-
-export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
-
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <View style={[{ backgroundColor }, style]} {...otherProps} />
 }
