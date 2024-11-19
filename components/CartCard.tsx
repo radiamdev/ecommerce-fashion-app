@@ -1,25 +1,53 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {
+  Dimensions,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import React from 'react'
 import { fonts } from '@/constants/Fonts'
 import { Image } from 'expo-image'
+import { ThemedText } from './ThemedText'
+import useThemeColor from '@/hooks/useThemeColor'
+
+const { width, height } = Dimensions.get('window')
 
 const CartCard = ({ item, handleDelete }: any) => {
+  const background = useThemeColor('background')
+
   return (
     <View style={styles.card}>
       <Image
         source={{ uri: item.image }}
-        contentFit='contain'
+        contentFit='fill'
         style={styles.image}
       />
       <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>${item.price}</Text>
+        {/* Product name  */}
+        <ThemedText
+          type='lgBold'
+          c='blackSecondary'
+          style={{ fontFamily: fonts.medium }}
+        >
+          {item.title}
+        </ThemedText>
+        {/* Product price */}
+        <ThemedText
+          type='lgBold'
+          c='greyQuadritary'
+          style={{ fontFamily: fonts.medium }}
+        >
+          ${item.price}
+        </ThemedText>
+        {/* Color and size container */}
         <View style={styles.textCircleContainer}>
           <View
             style={[styles.circle, { backgroundColor: item?.color || 'red' }]}
-          ></View>
-          <View style={styles.sizeContainer}>
-            <Text style={styles.sizeText}>{item.size}</Text>
+          />
+          <View style={[styles.sizeContainer, { backgroundColor: background }]}>
+            <ThemedText type='lgBold' style={{ fontFamily: fonts.medium }}>
+              {item.size}
+            </ThemedText>
           </View>
         </View>
       </View>
@@ -41,52 +69,34 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   image: {
-    height: 125,
-    width: '30%',
+    width: width * 0.3,
+    height: height * 0.15,
     borderRadius: 20,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: '700',
-    fontFamily: fonts.medium,
-    color: '#444444',
-  },
-  price: {
-    fontSize: 18,
-    fontFamily: fonts.medium,
-    color: '#797979',
-    marginVertical: 7,
-    fontWeight: '700',
   },
   content: {
     flex: 1,
-    padding: 5,
+    alignItems: 'flex-start',
+    gap: 10,
+    paddingHorizontal: 10,
   },
   circle: {
-    height: 32,
     width: 32,
+    aspectRatio: 1,
     borderRadius: 16,
   },
   sizeContainer: {
-    backgroundColor: '#FFFFFF',
-    height: 32,
     width: 32,
+    aspectRatio: 1,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 20,
-  },
-  sizeText: {
-    fontSize: 18,
-    fontWeight: '700',
-    fontFamily: fonts.medium,
   },
   textCircleContainer: {
     flexDirection: 'row',
+    gap: 20,
   },
   deleteIcon: {
     height: 30,
     width: 30,
-    marginTop: 10,
   },
 })
