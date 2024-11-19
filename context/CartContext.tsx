@@ -4,12 +4,12 @@ import React, {
   useEffect,
   useState,
   useContext,
-  ReactNode,
+  useMemo,
 } from 'react'
 
 // Define the structure of a cart item
-interface CartItem {
-  id: string
+export type CartItemType = {
+  id: string | number
   title: string
   price: number
   image: string
@@ -19,75 +19,109 @@ interface CartItem {
 
 // Define the structure of the CartContext
 interface CartContextType {
-  cartItems: CartItem[]
+  cartItems: CartItemType[]
   totalPrice: number
-  addToCartItem: (item: CartItem) => Promise<void>
-  deleteCartItem: (id: string) => Promise<void>
-}
-
-// Define the provider props
-interface CartProviderProps {
-  children: ReactNode
+  addToCartItem: (item: CartItemType) => Promise<void>
+  deleteCartItem: (id: string | number) => Promise<void>
+  clearCart: () => Promise<void>
 }
 
 // Create the CartContext with an undefined default value
 export const CartContext = createContext<CartContextType | undefined>(undefined)
 
-export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
+export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [cartItems, setCartItems] = useState<CartItemType[]>([])
   const [totalPrice, setTotalPrice] = useState<number>(0)
 
+  // Load cart items from AsyncStorage on component mount
   useEffect(() => {
     loadCartItems()
   }, [])
 
+  // Load cart items from AsyncStorage
   const loadCartItems = async () => {
-    let storedCartItems = await AsyncStorage.getItem('cart')
-    const parsedCartItems: CartItem[] = storedCartItems
-      ? JSON.parse(storedCartItems)
-      : []
-    setCartItems(parsedCartItems)
-    calculateTotalPrice(parsedCartItems)
-  }
+    try {
+      const storedCartItems = await AsyncStorage.getItem('cart')
+      const parsedCartItems: CartItemType[] = storedCartItems
+        ? JSON.parse(storedCartItems)
+        : []
 
-  const addToCartItem = async (item: CartItem) => {
-    let storedCartItems = await AsyncStorage.getItem('cart')
-    const parsedCartItems: CartItem[] = storedCartItems
-      ? JSON.parse(storedCartItems)
-      : []
-    const isExist = parsedCartItems.findIndex((cart) => cart.id === item.id)
+      // Ensure there are no duplicates or invalid items
+      const uniqueCartItems = Array.isArray(parsedCartItems)
+        ? parsedCartItems.filter(
+            (item, index, self) =>
+              self.findIndex((i) => i.id === item.id) === index,
+          )
+        : []
 
-    if (isExist === -1) {
-      const updatedCartItems = [...parsedCartItems, item]
-      setCartItems(updatedCartItems)
-      calculateTotalPrice(updatedCartItems)
-      await AsyncStorage.setItem('cart', JSON.stringify(updatedCartItems))
+      setCartItems(uniqueCartItems)
+    } catch (error) {
+      console.error('Failed to load cart items:', error)
     }
   }
 
-  const deleteCartItem = async (id: string) => {
-    let storedCartItems = await AsyncStorage.getItem('cart')
-    const parsedCartItems: CartItem[] = storedCartItems
-      ? JSON.parse(storedCartItems)
-      : []
-    const updatedCartItems = parsedCartItems.filter((item) => item.id !== id)
+  // Add a new item to the cart
+  const addToCartItem = async (item: CartItemType) => {
+    setCartItems((prev) => {
+      const isExist = prev.some((cart) => cart.id === item.id)
+      if (isExist) return prev
 
-    setCartItems(updatedCartItems)
-    calculateTotalPrice(updatedCartItems)
-    await AsyncStorage.setItem('cart', JSON.stringify(updatedCartItems))
+      const updatedCartItems = [...prev, item]
+
+      // Synchronize AsyncStorage
+      AsyncStorage.setItem('cart', JSON.stringify(updatedCartItems)).catch(
+        (error) => {
+          console.error(
+            'Failed to update AsyncStorage after adding an item:',
+            error,
+          )
+        },
+      )
+
+      return updatedCartItems
+    })
   }
 
-  const calculateTotalPrice = (cartItems: CartItem[]) => {
+  // Delete an item from the cart
+  const deleteCartItem = async (id: string | number) => {
+    setCartItems((prev) => {
+      const updatedCartItems = prev.filter((item) => item.id !== id)
+
+      // Synchronize AsyncStorage
+      AsyncStorage.setItem('cart', JSON.stringify(updatedCartItems)).catch(
+        (error) => {
+          console.error('Failed to update AsyncStorage after deletion:', error)
+        },
+      )
+
+      return updatedCartItems
+    })
+  }
+
+  // Clear the entire cart
+  const clearCart = async () => {
+    await AsyncStorage.removeItem('cart')
+    setCartItems([])
+  }
+
+  // Automatically update the total price whenever cartItems changes
+  useEffect(() => {
     const totalSum = cartItems.reduce((total, item) => total + item.price, 0)
-    setTotalPrice(parseFloat(totalSum.toFixed(2))) // Ensure the total is a number with two decimal places
-  }
+    setTotalPrice(parseFloat(totalSum.toFixed(2)))
+  }, [cartItems])
 
-  const value: CartContextType = {
-    cartItems,
-    totalPrice,
-    addToCartItem,
-    deleteCartItem,
-  }
+  const value = useMemo(
+    () => ({
+      cartItems,
+      totalPrice,
+      addToCartItem,
+      deleteCartItem,
+      clearCart,
+    }),
+    [cartItems, totalPrice],
+  )
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

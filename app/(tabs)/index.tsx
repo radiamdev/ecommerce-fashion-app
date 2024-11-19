@@ -10,6 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import useThemeColor from '@/hooks/useThemeColor'
 import { ThemedText } from '@/components/ThemedText'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/store'
 
 type Product = {
   id: number
@@ -20,6 +22,8 @@ type Product = {
 }
 
 export default function HomeScreen() {
+  const theme = useSelector((state: RootState) => state.theme.theme)
+
   const one = useThemeColor('pinkGradientOne')
   const two = useThemeColor('pinkGradientTwo')
 
@@ -48,7 +52,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar style='auto' />
+      <StatusBar style={theme === 'dark' ? 'light' : 'dark'} />
       <LinearGradient colors={[one, two]} style={styles.container}>
         <FlatList
           ListHeaderComponent={
@@ -99,7 +103,6 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
   },
   searchWrapper: {
